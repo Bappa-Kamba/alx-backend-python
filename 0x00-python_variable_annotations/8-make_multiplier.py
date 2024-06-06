@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Takes a float n as argument and returns a function that multiplies a float by n.
+Takes a float n as argument and returns a function that
+multiplies a float by n.
 """
 from typing import Callable
 
