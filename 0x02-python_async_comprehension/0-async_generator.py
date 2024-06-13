@@ -6,7 +6,7 @@ import asyncio
 from typing import AsyncGenerator
 
 
-async def async_generator() -> AsyncGenerator[float]:
+async def async_generator() -> AsyncGenerator[float, None, None]:
     """Coroutine that loops 10 times,
     each time asynchronously yields a random number between 0 and 10"""
     for _ in range(10):
