@@ -50,12 +50,12 @@ class TestGetJson(unittest.TestCase):
         Test class to test `utils.get_json` method, inherits from
         `unittest.Testcase`.
     """
-    @unittest.mock.patch('requests.get')
     @parameterized.expand([
         ("http://example.com", {"payload": True}),
         ("http://holberton.io", {"payload": False})
     ])
-    def test_get_json(self, url: str, expected):
+    @unittest.mock.patch('requests.get')
+    def test_get_json(self, url: str, expected: Mapping, mock_get):
         """
             Tests that the `utils.get_json` method returns the correct
             response.
@@ -64,6 +64,6 @@ class TestGetJson(unittest.TestCase):
         mock_response.json.return_value = expected
         requests.get.return_value = mock_response
 
-        requests.get.assert_called_once_with(url)
+        mock_get.assert_called_once_with(url)
 
         self.assertEqual(get_json(url), expected)
