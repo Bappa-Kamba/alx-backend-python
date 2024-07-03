@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """ Utils Test Module """
 import unittest
-import unittest.mock
-import requests
+from unittest.mock import patch, Mock
 from parameterized import parameterized
-from utils import access_nested_map, get_json
+from utils import (
+    access_nested_map,
+    get_json,
+    memoize
+)
 from typing import Mapping, Sequence, Any
 
 
@@ -54,15 +57,49 @@ class TestGetJson(unittest.TestCase):
         ("http://example.com", {"payload": True}),
         ("http://holberton.io", {"payload": False})
     ])
-    @unittest.mock.patch('requests.get')
+    @patch('requests.get')
     def test_get_json(self, url: str, expected: Mapping, mock_get):
         """
             Tests that the `utils.get_json` method returns the correct
             response.
         """
-        mock_response = unittest.mock.Mock()
+        mock_response = Mock()
         mock_response.json.return_value = expected
         mock_get.return_value = mock_response
 
         self.assertEqual(get_json(url), expected)
         mock_get.assert_called_once_with(url)
+
+
+class TestMemoize(unittest.TestCase):
+    """
+        Test class to test `utils.memoize` method, inherits from
+        `unittest.Testcase`.
+    """
+    def test_memoize(self,expected):
+        """
+            Tests that the `utils.memoize` method returns the correct
+            response.
+        """
+        class TestClass:
+
+            def a_method(self):
+                return 42
+
+            @memoize
+            def a_property(self):
+                return self.a_method()
+
+        with patch.object(TestClass, 'a_method', return_value=42) as mock_method:
+            test_instance = TestClass()
+
+            # Call the memoized property twice
+            result1 = test_instance.a_property
+            result2 = test_instance.a_property
+
+            # Assert that the mock was called exactly once
+            mock_method.assert_called_once()
+
+            # Assert that the result is correct
+            self.assertEqual(result1, 42)
+            self.assertEqual(result2, 42)
