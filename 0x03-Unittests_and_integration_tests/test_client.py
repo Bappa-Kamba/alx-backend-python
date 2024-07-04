@@ -15,12 +15,10 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     def test_org(self, org, expected, mock_get_json):
         """ Tests `client.GithubOrgClient.org` returns expected results """
-        mock_response = Mock()
-        mock_response.json.return_value = expected
-        mock_get_json.return_value = mock_response
+        mock_get_json.return_value = expected
         
-        test_class = GithubOrgClient(org)
+        test_client = GithubOrgClient(org)
 
-        self.assertEqual(test_class.org, expected)
+        self.assertEqual(test_client.org, expected)
         
         mock_get_json.assert_called_once_with(f'https://api.github.com/orgs/{org}')
