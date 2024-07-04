@@ -3,7 +3,7 @@
 import unittest
 from unittest.mock import patch, Mock
 from parameterized import parameterized
-from client import GithubOrgClient, get_json
+from client import GithubOrgClient
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -15,10 +15,12 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     def test_org(self, org, expected, mock_get_json):
         """ Tests `client.GithubOrgClient.org` returns expected results """
-        mock_get_json.return_value = expected
+        mock_response = Mock()
+        mock_response.json.return_value = expected
+        mock_get_json.return_value = mock_response
         
         test_class = GithubOrgClient(org)
 
         self.assertEqual(test_class.org, expected)
         
-        mock_get_json.assert_called_once_with(f'https://api.github.com/{org}')
+        mock_get_json.assert_called_once_with(f'https://api.github.com/orgs/{org}')
