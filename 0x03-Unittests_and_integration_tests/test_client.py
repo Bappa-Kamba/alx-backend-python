@@ -11,6 +11,7 @@ repos_payload = TEST_PAYLOAD[0][1]
 expected_repos = TEST_PAYLOAD[0][2]
 apache2_repos = TEST_PAYLOAD[0][3]
 
+
 class TestGithubOrgClient(unittest.TestCase):
     """ Test Github Org Client Class """
     @parameterized.expand([
@@ -113,7 +114,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         Tests `client.GithubOrgClient` integration with `client.GithubOrg`}
     """
     @classmethod
-    @patch('request.get')
+    @patch('requests.get')
     def setUpClass(cls, mock_get):
         """Set up any state specific to the test class."""
         cls.get_patcher = patch(
