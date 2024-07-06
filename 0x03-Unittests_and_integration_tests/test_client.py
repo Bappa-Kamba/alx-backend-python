@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """ Client Tests Module """
 import unittest
-from unittest.mock import patch, PropertyMock
-from parameterized import parameterized
+from unittest.mock import patch, PropertyMock, Mock
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
 
+org_payload = TEST_PAYLOAD[0][0]
+repos_payload = TEST_PAYLOAD[0][1]
+expected_repos = TEST_PAYLOAD[0][2]
+apache2_repos = TEST_PAYLOAD[0][3]
 
 class TestGithubOrgClient(unittest.TestCase):
     """ Test Github Org Client Class """
@@ -90,3 +95,46 @@ class TestGithubOrgClient(unittest.TestCase):
             ),
             expected
         )
+
+
+@parameterized_class(
+    (
+        'org_payload',
+        'repos_payload',
+        'expected_repos',
+        'apache2_repos'
+    ),
+    [
+        (org_payload, repos_payload, expected_repos, apache2_repos)
+    ]
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """
+        Tests `client.GithubOrgClient` integration with `client.GithubOrg`}
+    """
+    @classmethod
+    @patch('request.get')
+    def setUpClass(cls, mock_get):
+        """Set up any state specific to the test class."""
+        cls.get_patcher = patch(
+            'requests.get',
+            side_effect=cls.get_side_effect
+        )
+        cls.mock_get = cls.get_patcher.start()
+
+        print("Setting up the class resources")
+
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up any state specific to the test class."""
+        cls.get_patcher.stop()
+        print("Cleaning up the class resources")
+
+    @staticmethod
+    def get_side_effect(url):
+        """Side effect method for requests.get to return different payloads based on the URL."""
+        if 'orgs/' in url:
+            return Mock(json=lambda: org_payload)
+        if 'repos' in url:
+            return Mock(json=lambda: repos_payload)
+        return Mock(json=lambda: {})
